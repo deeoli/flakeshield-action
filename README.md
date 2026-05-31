@@ -1,8 +1,6 @@
-# FlakeShield GitHub Action
+# FlakeShield
 
-**Detect flaky tests, reduce CI noise, and know what to fix first.**
-
-FlakeShield turns repeated JUnit runs into a concise CI triage signal. Install it as a GitHub Action — no pip install, no onboarding, no secrets.
+FlakeShield turns repeated JUnit test runs into a short CI triage report: what failed, what's flaky, and what to fix first. Add one step to your workflow — no pip install, no secrets, no setup calls.
 
 ## Install
 
@@ -13,25 +11,84 @@ FlakeShield turns repeated JUnit runs into a concise CI triage signal. Install i
     reports: "outputs/junit_run*.xml"
     out_prefix: outputs/flake_report
     db_path: outputs/flakeshield.db
-    enable_semantic: "true"
-    warn_on_high: "true"
-    fail_on_critical: "false"
 ```
 
-Works in any public or private repository. No package access requests required.
+Run your tests first to produce JUnit XML, then point `reports` at those files. Full workflow: [`examples/canonical-workflow.yml`](examples/canonical-workflow.yml).
 
-## Example workflow
+## What FlakeShield Does
 
-See [`examples/canonical-workflow.yml`](examples/canonical-workflow.yml) for a full pull-request workflow with DB caching, artifact upload, and PR comment posting.
+- Detects flaky tests
+- Groups related failures
+- Prioritizes risk
+- Generates CI summaries
 
-## Outputs
+## Example Outputs
 
-The action writes:
+**Healthy run**
 
-- `flake_report.json` — structured report
-- `flake_report.md` — human-readable markdown summary
-- `flake_report_pr_comment.md` — compact PR comment body
-- `flakeshield.db` — persistence for cross-run flake tracking
+![Healthy CI run](docs/images/healthy-run.png)
+
+**Failure report**
+
+![Failure-heavy report](docs/images/failure-heavy.png)
+
+**PR comment**
+
+![PR comment summary](docs/images/pr-comment.png)
+
+## Example Report Sections
+
+From a real failure-heavy run:
+
+**Fix First**
+
+```markdown
+## 🔥 Fix First
+1. **Assertion mismatch: assert 1 == 2**
+
+   **Status:** New
+   **Risk:** HIGH (0.69)
+   **Seen in:** 5/5 runs
+   **Why this matters:** New failure pattern that may indicate a regression.
+   **Preview:** assert 1 == 2
+```
+
+**Overview**
+
+```markdown
+## 📊 Overview
+- Total Tests: **7**
+- Failures: **11**
+- Flaky Tests: **1**
+- Failure Groups: **5**
+- High-Risk Failures: **1**
+```
+
+**Suggested Next Steps**
+
+```markdown
+## 🧭 Suggested Next Steps
+
+- Review recent behavioral changes in affected tests
+```
+
+From a real healthy run:
+
+```markdown
+## ✅ CI Looks Healthy
+
+No flaky tests or high-risk failures were detected across recent runs.
+
+No immediate CI triage appears necessary.
+```
+
+## Example Repository
+
+See a working setup: **[deeoli/flakeshield-demo](https://github.com/deeoli/flakeshield-demo)**
+
+## Why It Exists
+
+CI logs get noisy fast. FlakeShield cuts repeated failures down to a ranked, readable summary so reviewers spend less time parsing output and more time fixing the right things. The goal is simple: less noise, clearer signal, faster triage.
 
 ## License
 
