@@ -2,11 +2,7 @@
 
 **Detect flaky tests, reduce CI noise, and know what to fix first.**
 
-FlakeShield turns repeated JUnit runs into a concise CI triage signal. Install it as a GitHub Action — no pip install required.
-
-## Closed beta
-
-During closed beta, the FlakeShield engine runs from a private container image on GHCR. Contact the maintainer to add your org or repository to the beta allowlist before adopting this action.
+FlakeShield turns repeated JUnit runs into a concise CI triage signal. Install it as a GitHub Action — no pip install, no onboarding, no secrets.
 
 ## Install
 
@@ -21,6 +17,8 @@ During closed beta, the FlakeShield engine runs from a private container image o
     warn_on_high: "true"
     fail_on_critical: "false"
 ```
+
+Works in any public or private repository. No package access requests required.
 
 ## Example workflow
 
