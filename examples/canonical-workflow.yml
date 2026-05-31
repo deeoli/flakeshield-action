@@ -1,0 +1,95 @@
+name: FlakeShield CI
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  flakeshield:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install test dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Prepare outputs
+        run: mkdir -p outputs
+
+      - name: Restore FlakeShield DB cache
+        uses: actions/cache@v4
+        with:
+          path: outputs/flakeshield.db
+          key: flakeshield-db-${{ github.ref }}-${{ github.run_id }}
+          restore-keys: |
+            flakeshield-db-${{ github.ref }}-
+
+      - name: Run tests (produce JUnit XML)
+        run: |
+          pytest --junitxml=outputs/junit_run1_${{ github.run_id }}.xml || true
+          pytest --junitxml=outputs/junit_run2_${{ github.run_id }}.xml || true
+
+      - name: Run FlakeShield
+        uses: deeoli/flakeshield-action@v0.6.0-beta.1
+        with:
+          reports: "outputs/junit_run*.xml"
+          enable_semantic: "true"
+          warn_on_high: "true"
+          fail_on_critical: "false"
+
+      - name: Post or update PR comment
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const body = fs.readFileSync('outputs/flake_report_pr_comment.md', 'utf8');
+            const comments = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            const existing = comments.data.find(c =>
+              c.body.includes('<!-- FlakeShield')
+            );
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body,
+              });
+            }
+
+      - name: Save FlakeShield DB cache
+        if: always()
+        uses: actions/cache@v4
+        with:
+          path: outputs/flakeshield.db
+          key: flakeshield-db-${{ github.ref }}-${{ github.run_id }}
+
+      - name: Upload artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: flakeshield-reports
+          path: |
+            outputs/flake_report.json
+            outputs/flake_report.md
+            outputs/flake_report_pr_comment.md
+            outputs/flakeshield.db

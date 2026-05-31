@@ -1,0 +1,47 @@
+name: "FlakeShield CI Intelligence"
+description: "Prioritize flaky and high-risk CI failures."
+
+inputs:
+  reports:
+    description: "Glob pattern for JUnit XML reports."
+    required: true
+  enable_semantic:
+    description: "Enable semantic mode."
+    required: false
+    default: "false"
+  warn_on_high:
+    description: "Add --warn-on-high flag."
+    required: false
+    default: "false"
+  fail_on_critical:
+    description: "Add --fail-on-critical flag."
+    required: false
+    default: "false"
+  max-risk-threshold:
+    description: "Threshold for --max-risk-threshold."
+    required: false
+    default: ""
+  out_prefix:
+    description: "Base path for output files."
+    required: false
+    default: "outputs/flake_report"
+  db_path:
+    description: "SQLite DB path."
+    required: false
+    default: "outputs/flakeshield.db"
+  enable_pr_comment:
+    description: "Post FlakeShield summary as GitHub PR comment."
+    required: false
+    default: "false"
+
+runs:
+  using: docker
+  image: docker://ghcr.io/deeoli/flakeshield-core:0.6.0-beta.1
+  args:
+    - "${{ inputs.reports }}"
+    - "${{ inputs.out_prefix }}"
+    - "${{ inputs.db_path }}"
+    - "${{ inputs.enable_semantic }}"
+    - "${{ inputs.warn_on_high }}"
+    - "${{ inputs.fail_on_critical }}"
+    - "${{ inputs.max-risk-threshold }}"
