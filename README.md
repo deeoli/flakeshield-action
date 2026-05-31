@@ -1,6 +1,6 @@
 # FlakeShield
 
-FlakeShield turns repeated JUnit test runs into a short CI triage report: what failed, what's flaky, and what to fix first. Add one step to your workflow — no pip install, no secrets, no setup calls.
+FlakeShield reads repeated JUnit XML runs and turns them into a short CI triage report — flaky tests, grouped failures, and what to fix first. One workflow step. No pip install. No secrets.
 
 ## Install
 
@@ -13,7 +13,7 @@ FlakeShield turns repeated JUnit test runs into a short CI triage report: what f
     db_path: outputs/flakeshield.db
 ```
 
-Run your tests first to produce JUnit XML, then point `reports` at those files. Full workflow: [`examples/canonical-workflow.yml`](examples/canonical-workflow.yml).
+Run tests first to produce JUnit XML, then point `reports` at those files. Full example: [`examples/canonical-workflow.yml`](examples/canonical-workflow.yml).
 
 ## What FlakeShield Does
 
@@ -84,12 +84,8 @@ No immediate CI triage appears necessary.
 
 ## Example Repository
 
-See a working setup: **[deeoli/flakeshield-demo](https://github.com/deeoli/flakeshield-demo)**
+Working setup: **[deeoli/flakeshield-demo](https://github.com/deeoli/flakeshield-demo)**
 
 ## Why It Exists
 
-CI logs get noisy fast. FlakeShield cuts repeated failures down to a ranked, readable summary so reviewers spend less time parsing output and more time fixing the right things. The goal is simple: less noise, clearer signal, faster triage.
-
-## License
-
-MIT — applies to this action wrapper, examples, and documentation only. The FlakeShield runtime engine is proprietary.
+CI output gets noisy fast. FlakeShield reduces that noise into a ranked summary so teams see clearer engineering signal. Spend less time parsing logs — more time fixing what actually matters.
