@@ -13,74 +13,39 @@ FlakeShield reads repeated JUnit XML runs and turns them into a short CI triage 
     db_path: outputs/flakeshield.db
 ```
 
-Run tests first to produce JUnit XML, then point `reports` at those files. Full example: [`examples/canonical-workflow.yml`](examples/canonical-workflow.yml).
+Run tests at least twice to produce JUnit XML (FlakeShield needs multiple runs), then point `reports` at those files. Full example: [`examples/canonical-workflow.yml`](examples/canonical-workflow.yml).
 
-## What FlakeShield Does
+## What You Get
 
-- Detects flaky tests
-- Groups related failures
-- Prioritizes risk
-- Generates CI summaries
+FlakeShield generates:
 
-## Example Outputs
+- `flake_report.md`
+- `flake_report.json`
+- `flake_report_pr_comment.md`
 
-**Healthy run**
+### Fix First
 
-![Healthy CI run](docs/images/healthy-run.png)
+![Fix First](docs/images/fix-first.png)
 
-**Failure report**
+Risk-ranked issues engineers should investigate first.
 
-![Failure-heavy report](docs/images/failure-heavy.png)
+### Suggested Next Steps
 
-**PR comment**
+![Suggested Next Steps](docs/images/investigation-guide.png)
 
-![PR comment summary](docs/images/pr-comment.png)
+Actionable investigation guidance generated from recurring failure patterns.
 
-## Example Report Sections
+### PR Summary
 
-From a real failure-heavy run:
+![PR Summary](docs/images/pr-summary.png)
 
-**Fix First**
+Compact pull-request summaries focused on what matters.
 
-```markdown
-## 🔥 Fix First
-1. **Assertion mismatch: assert 1 == 2**
+### Failure Grouping
 
-   **Status:** New
-   **Risk:** HIGH (0.69)
-   **Seen in:** 5/5 runs
-   **Why this matters:** New failure pattern that may indicate a regression.
-   **Preview:** assert 1 == 2
-```
+![Failure Grouping](docs/images/failure-grouping.png)
 
-**Overview**
-
-```markdown
-## 📊 Overview
-- Total Tests: **7**
-- Failures: **11**
-- Flaky Tests: **1**
-- Failure Groups: **5**
-- High-Risk Failures: **1**
-```
-
-**Suggested Next Steps**
-
-```markdown
-## 🧭 Suggested Next Steps
-
-- Review recent behavioral changes in affected tests
-```
-
-From a real healthy run:
-
-```markdown
-## ✅ CI Looks Healthy
-
-No flaky tests or high-risk failures were detected across recent runs.
-
-No immediate CI triage appears necessary.
-```
+Multiple failures compressed into root-cause groups.
 
 ## Example Repository
 
