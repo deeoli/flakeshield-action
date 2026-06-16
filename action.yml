@@ -36,7 +36,7 @@ inputs:
 
 runs:
   using: docker
-  image: docker://ghcr.io/deeoli/flakeshield-core:0.6.0-beta.1
+  image: docker://ghcr.io/deeoli/flakeshield-core:0.6.0-beta.2
   args:
     - "${{ inputs.reports }}"
     - "${{ inputs.out_prefix }}"
